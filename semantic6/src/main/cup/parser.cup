@@ -1,0 +1,158 @@
+package udv.compi;
+
+import java_cup.runtime.*;
+
+class Parser;
+
+terminal LLA, LLC, CA, CC, DP, COMMA, COMILLA, PLUS, PRO, TIPO, IGUAL, PYC;
+terminal String VAL, ID, DOU;
+terminal String NUM;
+
+non terminal tipo S, L, LP, V, E, T, F;
+
+start with S;
+
+S ::= TIPO:t ID:d IGUAL E:e PYC{:
+		if(t.equals("int") && e.tipov==2){
+			System.out.println("Error semántico, no se puede asignar eld double: " + e.valorD + " a la variable "+d);
+		}else if(t.equals("int") && e.tipov==3){
+			System.out.println("Error semántico, no se puede asignar la cadena: " + e.valorS + " a la variable "+d);
+		}else if(t.equals("double") && e.tipov==3){
+			System.out.println("Error semántico, no se puede asignar la cadena: " + e.valorS + " a la variable "+d);
+		}else{
+			System.out.println("Asignación realizada con éxito a la variable "+ d);
+		}
+	:};
+E ::= E:e1 PLUS T:t{:
+		tipo aux = new tipo();
+
+		if(e1.tipov == 1 && t.tipov == 1){
+			aux.tipov=1;
+			aux.valorI = e1.valorI+t.valorI;
+			aux.valorD = 0;
+			aux.valorS = "";
+		}else if(e1.tipov == 1 && t.tipov == 2){
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = e1.valorI + t.valorD;
+			aux.valorS = "";
+		}else if(e1.tipov == 1 && t.tipov == 3){
+			aux.tipov=3;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = e1.valorI + t.valorS;
+		}else if(e1.tipov == 2 && t.tipov == 1){
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = e1.valorD + t.valorI;
+			aux.valorS = "";
+		}else if(e1.tipov == 2 && t.tipov == 2){
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = e1.valorD + t.valorD;
+			aux.valorS = "";
+		}else if(e1.tipov == 2 && t.tipov == 3){
+			aux.tipov=3;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = e1.valorD + t.valorS;
+		}else if(e1.tipov == 3 && t.tipov == 1){
+			aux.tipov=3;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = e1.valorI + t.valorS;
+		}else if(e1.tipov == 3 && t.tipov == 2){
+			aux.tipov=3;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = e1.valorD + t.valorS;
+		}else if(e1.tipov == 3 && t.tipov == 3){
+			aux.tipov=3;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = e1.valorS + t.valorS;
+		}else{
+			aux.tipov=-1;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = "Error semántico";
+		}
+		RESULT =aux;
+		:}
+	|T:t{:
+			tipo aux = new tipo();
+			aux.tipov=t.tipov;
+			aux.valorI = t.valorI;
+			aux.valorD = t.valorD;
+			aux.valorS = t.valorS;
+			RESULT = aux;
+	:};
+
+T ::= T:t1 PRO F:f{:
+		tipo aux = new tipo();
+
+		if(t1.tipov == 1 && f.tipov == 1){
+			aux.tipov=t1.tipov;
+			aux.valorI = t1.valorI*f.valorI;
+			aux.valorD = 0;
+			aux.valorS = "";
+		}else if(t1.tipov == 1 && f.tipov == 2){
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = t1.valorI*f.valorD;
+			aux.valorS = "";
+		}else if(t1.tipov == 2 && f.tipov == 1){
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = t1.valorD*f.valorI;
+			aux.valorS = "";
+		}else if(t1.tipov == 2 && f.tipov == 2){
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = t1.valorD*f.valorD;
+			aux.valorS = "";
+		}else{
+			aux.tipov=-1;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = "Error semántico";
+		}
+		RESULT =aux;
+		
+	:}
+	|F:f{:
+			tipo aux = new tipo();
+			aux.tipov=f.tipov;
+			aux.valorI = f.valorI;
+			aux.valorD = f.valorD;
+			aux.valorS = f.valorS;
+			RESULT = aux;
+	:};
+	
+F ::= NUM:n{:
+			tipo aux = new tipo();
+			aux.tipov=1;
+			aux.valorI = Integer.parseInt(n);
+			aux.valorD = 0;
+			aux.valorS = "";
+			RESULT = aux;
+	:}
+	|DOU:n{:
+			tipo aux = new tipo();
+			aux.tipov=2;
+			aux.valorI = 0;
+			aux.valorD = Double.parseDouble(n);
+			aux.valorS = "";
+			RESULT = aux;
+	:}
+	|COMILLA ID:n COMILLA{:
+			tipo aux = new tipo();
+			aux.tipov=3;
+			aux.valorI = 0;
+			aux.valorD = 0;
+			aux.valorS = n;
+			RESULT = aux;
+	:} 
+	|CA E:e CC ;
+			
+	
