@@ -1,1 +1,1 @@
-# Comprobaci
+# Comprobacion de tipos
